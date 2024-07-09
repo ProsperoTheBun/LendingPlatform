@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LendingPlatform\LendingPlatform.csproj" />
+    <ProjectReference Include="..\..\DELETE ME\git-test\LendingPlatform.Console\LendingPlatform.Console.csproj" />
   </ItemGroup>
 
   <ItemGroup>
