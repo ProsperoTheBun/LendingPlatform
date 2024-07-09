@@ -24,3 +24,5 @@ Any changes required or recommended for a production release are marked in the c
 
 Any assumptions are marked `// ASS`. 😊
 
+### Unit tests
+A test project has been included but is probably overkill for this exercise. It was, however, helpful for me to utilise TDD.
