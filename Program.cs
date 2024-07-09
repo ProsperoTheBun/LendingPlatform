@@ -4,17 +4,22 @@ namespace LendingPlatform
 {
     internal class Program
     {
+        /// <summary>
+        /// Output some running calculations and statistics to the console.
+        /// </summary>
         private static void DisplayStats(List<ApplicationResult> history)
         {
-            Console.WriteLine($"There have been {history.Count} applications. {history.Count(a => a.IsApproved)} approved, {history.Count(a => !a.IsApproved)} rejected.");
-
+            Console.WriteLine($"There have been {history.Count} applications. {history.Count(a => a.IsApproved)} approved, {history.Count(a => !a.IsApproved)} declined.");
             Console.WriteLine($"The total of loans written is {history.Where(a => a.IsApproved).Sum(a => a.LoanApplication.LoanAmount):C0}");
-            var averageLtv = history.Average(a => a.LoanApplication.LoanToValueRatio);
-            Console.WriteLine($"Mean/Average LTV of all applications is {averageLtv * 100:F2}%");
+            Console.WriteLine($"Mean/Average LTV of all applications is {history.Average(a => a.LoanApplication.LoanToValueRatio) * 100:F2}%");
         }
 
+        /// <summary>
+        /// Prompt the user to enter the loan application details in the console.
+        /// </summary>
         private static LoanApplication GetLoanApplication()
         {
+            // TODO: validation of all these inputs, and user-friendly error handling
             var result = new LoanApplication();
             Console.Write("Requested Loan amount:  ");
             result.LoanAmount = int.Parse(Console.ReadLine());
@@ -26,7 +31,10 @@ namespace LendingPlatform
             return result;
         }
 
-        private static void Main(string[] args)
+        /// <summary>
+        /// Read and parse the configuration file to obtain the ruleset
+        /// </summary>
+        private static Ruleset LoadRulesetFromConfig()
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -36,8 +44,16 @@ namespace LendingPlatform
 
             var ruleset = config.GetRequiredSection(nameof(Ruleset)).Get<Ruleset>();
 
-            var loanApprover = new LoanApprovalService(ruleset!);
+            // TODO: handle empty or invalid configuration gracefully
+            return ruleset!;
+        }
+
+        private static void Main(string[] args)
+        {
+            var ruleset = LoadRulesetFromConfig();
+            var loanApprover = new LoanApprovalService(ruleset);
             var history = new List<ApplicationResult>();
+
             while (true)
             {
                 Console.WriteLine("Lending Platform");
@@ -48,7 +64,7 @@ namespace LendingPlatform
                 var isApproved = loanApprover.IsLoanApproved(app);
 
                 Console.WriteLine();
-                Console.WriteLine($"This application is {(isApproved ? "APPROVED" : "REJECTED")}");
+                Console.WriteLine($"This application is {(isApproved ? "APPROVED" : "DECLINED")}");
                 Console.WriteLine();
 
                 history.Add(new ApplicationResult { LoanApplication = app, IsApproved = isApproved });
